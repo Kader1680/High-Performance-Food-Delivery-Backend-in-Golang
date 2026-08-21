@@ -37,4 +37,4 @@ export default function CreateRestaurantPage() {
       </div>
     // </ProtectedRoute>
   );
-}
+} 
