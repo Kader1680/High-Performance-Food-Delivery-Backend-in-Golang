@@ -9,6 +9,8 @@ import (
 	"github.com/Kader1680/High-Performance-Food-Delivery-Backend/internal/categories"
 	"github.com/Kader1680/High-Performance-Food-Delivery-Backend/internal/restaurant"
 	"github.com/Kader1680/High-Performance-Food-Delivery-Backend/internal/middleware"
+	"github.com/Kader1680/High-Performance-Food-Delivery-Backend/internal/menuitem"
+	"github.com/Kader1680/High-Performance-Food-Delivery-Backend/internal/cart"
 )
 
 func NewRouter(pool *pgxpool.Pool) *gin.Engine {
@@ -47,12 +49,14 @@ func NewRouter(pool *pgxpool.Pool) *gin.Engine {
 	restaurantRepo := restaurant.NewRepository(pool)
 	restaurantService := restaurant.NewService(restaurantRepo)
 	restaurantHandler := restaurant.NewHandler(restaurantService)
-	restaurants := r.Group("/restaurants")
+	restaurants := r.Group("/api/restaurants")
 	{
 		restaurants.POST("", restaurantHandler.Create)
 		restaurants.GET("", restaurantHandler.GetAll)
+		restaurants.GET("/:id", restaurantHandler.FindByID)
+		restaurants.PUT("/:id", restaurantHandler.Update)
+		restaurants.DELETE("/:id", restaurantHandler.Delete)
 	}
-
 
 	categoryRepo := categories.NewRepository(pool)
 	categoryService := categories.NewService(categoryRepo)
@@ -61,6 +65,37 @@ func NewRouter(pool *pgxpool.Pool) *gin.Engine {
 	{
 		categories.POST("/", categoryHandler.Create)
 		categories.GET("/", categoryHandler.GetAll)
+	}
+
+	menuItemRepo := menuitem.NewRepository(pool)
+	menuItemService := menuitem.NewService(menuItemRepo)
+	menuItemHandler := menuitem.NewHandler(menuItemService)
+
+	menuItems := r.Group("/api/menuitems")
+	{
+		menuItems.POST("", menuItemHandler.Create)
+		menuItems.GET("", menuItemHandler.GetAll)
+		menuItems.GET("/:id", menuItemHandler.FindByID)
+		menuItems.PUT("/:id", menuItemHandler.Update)
+		menuItems.DELETE("/:id", menuItemHandler.Delete)
+	}
+
+	cartRepo := cart.NewRepository(pool)
+
+
+	cartService := cart.NewService(
+		cartRepo,
+		menuItemRepo,
+	)
+
+	cartHandler := cart.NewHandler(cartService)
+
+	carts := r.Group("/api/cart")
+	{
+		carts.GET("", cartHandler.GetCart)
+		carts.POST("/items", cartHandler.AddItem)
+		carts.DELETE("/items/:itemID", cartHandler.DeleteItem)
+		carts.PUT("/items/:itemID", cartHandler.UpdateItem)
 	}
 
 	return r

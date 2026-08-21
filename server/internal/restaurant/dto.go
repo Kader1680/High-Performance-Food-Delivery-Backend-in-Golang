@@ -13,6 +13,15 @@ type RestaurantResponse struct {
 	Description string `json:"description"`
 	Phone       string `json:"phone"`
 	Address     string `json:"address"`
-	Status      int    `json:"status"`
+	Status      string `json:"status"`
+	IsOpen      bool   `json:"is_open"`
+}
+
+type UpdateRestaurantRequest struct {
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description"`
+	Phone       string `json:"phone"`
+	Address     string `json:"address"`
+	Status      string `json:"status"`
 	IsOpen      bool   `json:"is_open"`
 }

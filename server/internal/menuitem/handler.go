@@ -1,4 +1,4 @@
-package restaurant
+package menuitem
 
 import (
 	"net/http"
@@ -18,7 +18,8 @@ func NewHandler(service *Service) *Handler {
 }
 
 func (h *Handler) Create(c *gin.Context) {
-	var req CreateRestaurantRequest
+
+	var req CreateMenuItemRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -27,12 +28,9 @@ func (h *Handler) Create(c *gin.Context) {
 		return
 	}
 
-	ownerID := int64(1)
-
 	err := h.service.Create(
 		c.Request.Context(),
 		req,
-		ownerID,
 	)
 
 	if err != nil {
@@ -43,12 +41,13 @@ func (h *Handler) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "Restaurant created successfully",
+		"message": "Menu item created successfully",
 	})
 }
 
 func (h *Handler) GetAll(c *gin.Context) {
-	restaurants, err := h.service.GetAll(
+
+	items, err := h.service.GetAll(
 		c.Request.Context(),
 	)
 
@@ -60,11 +59,12 @@ func (h *Handler) GetAll(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": restaurants,
+		"data": items,
 	})
 }
 
 func (h *Handler) FindByID(c *gin.Context) {
+
 	id, err := strconv.ParseInt(
 		c.Param("id"),
 		10,
@@ -73,12 +73,12 @@ func (h *Handler) FindByID(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid restaurant ID",
+			"error": "invalid menu item ID",
 		})
 		return
 	}
 
-	restaurant, err := h.service.FindByID(
+	item, err := h.service.FindByID(
 		c.Request.Context(),
 		id,
 	)
@@ -91,11 +91,12 @@ func (h *Handler) FindByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": restaurant,
+		"data": item,
 	})
 }
 
 func (h *Handler) Update(c *gin.Context) {
+
 	id, err := strconv.ParseInt(
 		c.Param("id"),
 		10,
@@ -104,12 +105,12 @@ func (h *Handler) Update(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid restaurant ID",
+			"error": "invalid menu item ID",
 		})
 		return
 	}
 
-	var req UpdateRestaurantRequest
+	var req UpdateMenuItemRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -118,35 +119,37 @@ func (h *Handler) Update(c *gin.Context) {
 		return
 	}
 
-	restaurant := &Restaurant{
-		ID:          id,
-		Name:        req.Name,
-		Description: req.Description,
-		Phone:       req.Phone,
-		Address:     req.Address,
-		Status:      RestaurantStatus(req.Status),
-		IsOpen:      req.IsOpen,
+	item := &MenuItem{
+		ID:           id,
+		Title:        req.Title,
+		Description:  req.Description,
+		Status:       MenuItemStatus(req.Status),
+		Price:        req.Price,
+		Image:        req.Image,
+		Stock:        req.Stock,
+		Availability: req.Availability,
 	}
 
 	updated, err := h.service.Update(
 		c.Request.Context(),
-		restaurant,
+		item,
 	)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Restaurant updated successfully",
+		"message": "Menu item updated successfully",
 		"data":    updated,
 	})
-} 
+}
 
 func (h *Handler) Delete(c *gin.Context) {
+
 	id, err := strconv.ParseInt(
 		c.Param("id"),
 		10,
@@ -155,7 +158,7 @@ func (h *Handler) Delete(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid restaurant ID",
+			"error": "invalid menu item ID",
 		})
 		return
 	}
@@ -173,6 +176,6 @@ func (h *Handler) Delete(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Restaurant deleted successfully",
+		"message": "Menu item deleted successfully",
 	})
 }

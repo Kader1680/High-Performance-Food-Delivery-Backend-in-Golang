@@ -31,10 +31,33 @@ func (s *Service) Create(
 	return s.repo.Create(ctx, restaurant)
 }
 
-
 func (s *Service) GetAll(
 	ctx context.Context,
 ) ([]Restaurant, error) {
 
 	return s.repo.GetAll(ctx)
+}
+
+func (s *Service) FindByID(
+	ctx context.Context,
+	id int64,
+) (*Restaurant, error) {
+
+	return s.repo.FindByID(ctx, id)
+}
+
+func (s *Service) Update(
+	ctx context.Context,
+	restaurant *Restaurant,
+) (*Restaurant, error) {
+
+	return s.repo.Update(ctx, restaurant)
+}
+
+func (s *Service) Delete(
+	ctx context.Context,
+	id int64,
+) error {
+
+	return s.repo.Delete(ctx, id)
 }
