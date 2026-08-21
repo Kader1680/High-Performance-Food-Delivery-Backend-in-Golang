@@ -33,12 +33,12 @@ func NewRouter(pool *pgxpool.Pool) *gin.Engine {
 	authService := auth.NewService(authRepo)
 	authHandler := auth.NewHandler(authService)
 
-	authRoutes := r.Group("/auth")
+	authRoutes := r.Group("/api/auth")
 	{
 		authRoutes.POST("/register", authHandler.Register)
 		authRoutes.POST("/login", authHandler.Login)
 	}
-	protected := r.Group("/")
+	protected := r.Group("/api")
 	protected.Use(middleware.AuthMiddleware())
 	{
 		protected.GET("/users/me", authHandler.GetMe)
