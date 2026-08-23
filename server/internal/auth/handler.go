@@ -54,6 +54,8 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
+	c.SetCookie("token", token, 3600*24, "/", "localhost", false, true)  
+
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
 	})
@@ -71,4 +73,10 @@ func (h *Handler) GetMe(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"user_id": userID,
 	})
+}
+
+
+func (h *Handler) Logout(c *gin.Context) {
+	c.SetCookie("token", "", -1, "/", "localhost", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
 }

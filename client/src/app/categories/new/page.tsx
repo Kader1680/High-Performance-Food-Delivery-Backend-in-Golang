@@ -1,0 +1,119 @@
+"use client";
+
+import { useEffect, useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { categoriesApi } from "@/lib/categories";
+import { restaurantsApi, Restaurant } from "@/lib/restaurants";
+import { ApiError } from "@/lib/api";
+
+export default function NewCategoryPage() {
+  const router = useRouter();
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [restaurantId, setRestaurantId] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    restaurantsApi
+      .getAll()
+      .then((res) => setRestaurants(res.data ?? []))
+      .catch(() => setRestaurants([]));
+  }, []);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      await categoriesApi.create({
+        title,
+        description,
+        restaurant_id: parseInt(restaurantId, 10),
+      });
+      router.push("/categories");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Something went wrong");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-md px-5 py-16">
+      <h1 className="font-display text-3xl font-semibold text-ink">
+        Add a category
+      </h1>
+
+      <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
+        <div>
+          <label className="block text-sm font-medium text-ink/80 mb-1.5">
+            Title
+          </label>
+          <input
+            type="text"
+            required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full rounded-lg border border-line px-4 py-2.5 outline-none focus:border-chili transition-colors"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-ink/80 mb-1.5">
+            Description
+          </label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+            className="w-full rounded-lg border border-line px-4 py-2.5 outline-none focus:border-chili transition-colors resize-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-ink/80 mb-1.5">
+            Restaurant
+          </label>
+          {restaurants.length > 0 ? (
+            <select
+              required
+              value={restaurantId}
+              onChange={(e) => setRestaurantId(e.target.value)}
+              className="w-full rounded-lg border border-line px-4 py-2.5 outline-none focus:border-chili transition-colors bg-white"
+            >
+              <option value="" disabled>
+                Select a restaurant…
+              </option>
+              {restaurants.map((r) => (
+                <option key={r.ID} value={r.ID}>
+                  {r.Name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type="number"
+              required
+              placeholder="Restaurant ID"
+              value={restaurantId}
+              onChange={(e) => setRestaurantId(e.target.value)}
+              className="w-full rounded-lg border border-line px-4 py-2.5 outline-none focus:border-chili transition-colors"
+            />
+          )}
+        </div>
+
+        {error && <p className="text-sm text-chili">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className="mt-2 rounded-full bg-chili text-white font-medium py-3 hover:bg-chili/90 transition-colors disabled:opacity-60"
+        >
+          {submitting ? "Creating…" : "Create category"}
+        </button>
+      </form>
+    </div>
+  );
+}
