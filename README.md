@@ -11,6 +11,7 @@ The application allows customers to discover restaurants, browse menus, place or
 * [Overview](#overview)
 * [Core Features](#core-features)
 * [System Workflow](#system-workflow)
+* [Data flow](#data-flow)
 * [Functional Requirements](#functional-requirements)
 * [Non-Functional Requirements](#non-functional-requirements)
 * [Technology Stack](#technology-stack)
@@ -229,6 +230,10 @@ Online Payment        Cash on Delivery
 
 ---
 
+# Data flow
+
+<img src="images/208aa56e-72b3-49d8-b7d3-1821e6e10f90.png" alt="Project Screenshot" width="500">
+ 
 # Functional Requirements
 
 ## Customer
