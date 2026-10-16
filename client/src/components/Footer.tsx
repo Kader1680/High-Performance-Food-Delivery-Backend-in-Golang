@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="mx-auto max-w-6xl px-5 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div>
           <span className="font-display text-xl font-semibold text-ink">
-            Forkful
+            Foodie
           </span>
           <p className="text-sm text-muted mt-1">
             Food from your favorite places, delivered.
@@ -27,7 +27,7 @@ export default function Footer() {
         </div>
 
         <p className="text-xs text-muted">
-          © {new Date().getFullYear()} Forkful. All rights reserved.
+          © {new Date().getFullYear()} Foodie. All rights reserved.
         </p>
       </div>
     </footer>

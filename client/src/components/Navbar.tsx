@@ -21,7 +21,7 @@ export default function Navbar() {
       <nav className="mx-auto max-w-6xl px-5 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <span className="font-display text-2xl font-semibold tracking-tight text-ink">
-            Forkful
+            Foodie
           </span>
         </Link>
 
