@@ -837,58 +837,7 @@ Go API
  |
  +-- Payment Providers
 ```
-
-## End-to-End Tests
-
-The complete customer workflow should be tested:
-
-```text
-Register
-   |
-Login
-   |
-Browse Restaurant
-   |
-Select Menu
-   |
-Add to Cart
-   |
-Place Order
-   |
-Payment
-   |
-Restaurant Accepts
-   |
-Driver Assigned
-   |
-Pickup
-   |
-Delivery
-   |
-Order Completed
-```
-
----
-
-# Engineering Principles
-
-The project should follow established software engineering principles:
-
-* Separation of concerns
-* SOLID principles
-* DRY
-* Single responsibility
-* Clear domain boundaries
-* Database normalization
-* Proper indexing
-* Explicit transaction boundaries
-* Idempotency for critical operations
-* Server-side validation
-* Secure-by-default design
-* Observability
-* Structured logging
-* Testability
-
+ 
 ---
 
 # Future Improvements
@@ -918,39 +867,4 @@ Potential future features include:
 * Event-driven architecture
 
 Microservices can be considered later if the scale and organizational requirements justify the additional operational complexity.
-
----
-
-# Project Goals
-
-This project is designed not only to implement a food delivery application, but also to demonstrate practical backend and system design concepts.
-
-The main engineering areas are:
-
-```text
-Database Design
-        |
-Transactions
-        |
-Concurrency
-        |
-Authentication
-        |
-Authorization
-        |
-Payment Processing
-        |
-Caching
-        |
-Performance
-        |
-Scalability
-        |
-Docker
-        |
-CI/CD
-        |
-Cloud Deployment
-```
-
-The final system should provide a solid foundation for understanding how a real-world transactional application can be designed, implemented, tested, and deployed in a production environment.
+ 
