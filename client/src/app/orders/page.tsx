@@ -23,7 +23,10 @@ export default function OrdersPage() {
   useEffect(() => {
     ordersApi
       .getAll()
-      .then((res) => setOrders(res.data ?? []))
+      .then((res) => {
+        setOrders(res.data ?? []);
+        console.log(res.data);
+      })
       .catch((err) =>
         setError(err instanceof ApiError ? err.message : "Failed to load orders")
       )
@@ -62,6 +65,7 @@ export default function OrdersPage() {
               </span>
               <span className="font-semibold text-ink">
                 ${order.total_amount.toFixed(2)}
+                
               </span>
             </div>
           </Link>

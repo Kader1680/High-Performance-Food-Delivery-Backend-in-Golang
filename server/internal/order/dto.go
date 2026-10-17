@@ -3,6 +3,9 @@ package order
 type CreateOrderRequest struct {
 	Address     string  `json:"address" binding:"required"`
 	DeliveryFee float64 `json:"delivery_fee"`
+	TotalAmount float64 `json:"total_amount"`
+	CartID      *int64  `json:"cart_id"`
+
 }
 
 type UpdateOrderStatusRequest struct {

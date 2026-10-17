@@ -35,10 +35,11 @@ func (s *Service) Create(
 	order := &Order{
 		CodeOrder:   codeOrder,
 		UserID:      userID,
+		CartID:      req.CartID,
 		Status:      StatusPending,
 		Address:     req.Address,
 		DeliveryFee: req.DeliveryFee,
-		TotalAmount: req.DeliveryFee,
+		TotalAmount: req.TotalAmount,
 	}
 
 	err := s.repo.Create(

@@ -41,6 +41,7 @@ export type OrderDetail = Order & {
 export type CreateOrderInput = {
   address: string;
   delivery_fee?: number;
+  total_amount: number;
 };
 
 export const ordersApi = {
