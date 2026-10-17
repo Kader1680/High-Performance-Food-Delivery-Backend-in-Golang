@@ -17,6 +17,27 @@ func NewHandler(service *Service) *Handler {
 	}
 }
 
+func getUserID(c *gin.Context) (int64, bool) {
+    value, exists := c.Get("userID")
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{
+            "error": "User not authenticated",
+        })
+        return 0, false
+    }
+
+    userID, ok := value.(int64)
+    if !ok {
+        c.JSON(http.StatusInternalServerError, gin.H{
+            "error": "Invalid user ID in context",
+        })
+        return 0, false
+    }
+
+    return userID, true
+}
+
+
 func (h *Handler) Create(c *gin.Context) {
 
 	var req CreateOrderRequest
@@ -28,8 +49,11 @@ func (h *Handler) Create(c *gin.Context) {
 		return
 	}
 
-	// Temporary until authentication middleware provides user ID.
-	userID := int64(1)
+	 
+	userID, ok := getUserID(c)
+	if !ok {
+		return
+	}
 
 	order, err := h.service.Create(
 		c.Request.Context(),
@@ -50,26 +74,39 @@ func (h *Handler) Create(c *gin.Context) {
 	})
 }
 
+
 func (h *Handler) GetAll(c *gin.Context) {
+    userID, ok := getUserID(c)
+    if !ok {
+        return
+    }
 
-	orders, err := h.service.GetAll(
-		c.Request.Context(),
-	)
+    orders, err := h.service.GetAll(
+        c.Request.Context(),
+        userID,
+    )
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{
+            "error": "Failed to retrieve orders",
+        })
+        return
+    }
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": orders,
-	})
+    c.JSON(http.StatusOK, gin.H{
+        "data": orders,
+    })
 }
 
 
+
 func (h *Handler) FindByID(c *gin.Context) {
+
+	userID, ok := getUserID(c)
+    if !ok {
+        return
+    }
+
 
 	id, err := strconv.ParseInt(
 		c.Param("id"),
@@ -87,6 +124,7 @@ func (h *Handler) FindByID(c *gin.Context) {
 	order, err := h.service.FindByID(
 		c.Request.Context(),
 		id,
+		userID,
 	)
 
 	if err != nil {
@@ -102,6 +140,11 @@ func (h *Handler) FindByID(c *gin.Context) {
 }
 
 func (h *Handler) UpdateStatus(c *gin.Context) {
+
+	userID, ok := getUserID(c)
+    if !ok {
+        return
+    }
 
 	id, err := strconv.ParseInt(
 		c.Param("id"),
@@ -129,6 +172,7 @@ func (h *Handler) UpdateStatus(c *gin.Context) {
 		c.Request.Context(),
 		id,
 		req.Status,
+		userID,
 	)
 
 	if err != nil {
@@ -146,6 +190,11 @@ func (h *Handler) UpdateStatus(c *gin.Context) {
 
 func (h *Handler) Delete(c *gin.Context) {
 
+	userID, ok := getUserID(c)
+    if !ok {
+        return
+    }
+
 	id, err := strconv.ParseInt(
 		c.Param("id"),
 		10,
@@ -162,6 +211,7 @@ func (h *Handler) Delete(c *gin.Context) {
 	err = h.service.Delete(
 		c.Request.Context(),
 		id,
+		userID,
 	)
 
 	if err != nil {

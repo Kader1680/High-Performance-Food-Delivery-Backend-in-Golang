@@ -93,6 +93,7 @@ func NewRouter(pool *pgxpool.Pool) *gin.Engine {
 	cartHandler := cart.NewHandler(cartService)
 
 	carts := r.Group("/api/cart")
+	carts.Use(middleware.AuthMiddleware())
 	{
 		carts.GET("", cartHandler.GetCart)
 		carts.POST("/items", cartHandler.AddItem)
@@ -106,6 +107,7 @@ func NewRouter(pool *pgxpool.Pool) *gin.Engine {
 	orderHandler := order.NewHandler(orderService)
 
 	orders := r.Group("/api/orders")
+	orders.Use(middleware.AuthMiddleware())
 	{
 		orders.POST("", orderHandler.Create)
 		orders.GET("", orderHandler.GetAll)

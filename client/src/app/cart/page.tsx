@@ -13,6 +13,7 @@ export default function CartPage() {
   const [error, setError] = useState<string | null>(null);
   const [pendingItemId, setPendingItemId] = useState<number | null>(null);
 
+
   const load = useCallback(async () => {
     try {
       const res = await cartApi.get();

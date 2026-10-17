@@ -8,10 +8,10 @@ import (
 
 type Repository interface {
 	Create(ctx context.Context, order *Order) error
-	GetAll(ctx context.Context) ([]Order, error)
-	FindByID(ctx context.Context, id int64) (*Order, error)
-	UpdateStatus(ctx context.Context, id int64, status OrderStatus) (*Order, error)
-	Delete(ctx context.Context, id int64) error
+	GetAll(ctx context.Context, userID int64) ([]Order, error)
+	FindByID(ctx context.Context, id int64, userID int64) (*Order, error)
+	UpdateStatus(ctx context.Context, id int64, userID int64, status OrderStatus) (*Order, error)
+	Delete(ctx context.Context, userID int64, id int64) error
 
 	CreateItem(ctx context.Context, item *OrderItem) error
 	GetItems(ctx context.Context, orderID int64) ([]OrderItem, error)
@@ -83,6 +83,7 @@ func (r *repository) Create(
 
 func (r *repository) GetAll(
 	ctx context.Context,
+	userID int64,
 ) ([]Order, error) {
 
 	const query = `
@@ -98,10 +99,14 @@ func (r *repository) GetAll(
 			created_at,
 			updated_at
 		FROM orders
-		ORDER BY created_at DESC;
+		WHERE user_id = $1
+
+		ORDER BY created_at DESC
+		;
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	 
+	rows, err := r.db.Query(ctx, query, userID)
 
 	if err != nil {
 		return nil, err
@@ -146,6 +151,7 @@ func (r *repository) GetAll(
 func (r *repository) FindByID(
 	ctx context.Context,
 	id int64,
+	userID int64,
 ) (*Order, error) {
 
 	const query = `
@@ -161,7 +167,7 @@ func (r *repository) FindByID(
 			created_at,
 			updated_at
 		FROM orders
-		WHERE id = $1;
+		WHERE id = $1 AND user_id = $2;
 	`
 
 	var order Order
@@ -170,6 +176,7 @@ func (r *repository) FindByID(
 		ctx,
 		query,
 		id,
+		userID,
 	).Scan(
 		&order.ID,
 		&order.CodeOrder,
@@ -194,6 +201,7 @@ func (r *repository) FindByID(
 func (r *repository) UpdateStatus(
 	ctx context.Context,
 	id int64,
+	userID int64,
 	status OrderStatus,
 ) (*Order, error) {
 
@@ -202,7 +210,7 @@ func (r *repository) UpdateStatus(
 		SET
 			status = $2,
 			updated_at = NOW()
-		WHERE id = $1
+		WHERE id = $1 AND user_id = $3
 		RETURNING
 			id,
 			code_order,
@@ -223,6 +231,7 @@ func (r *repository) UpdateStatus(
 		query,
 		id,
 		status,
+		userID,
 	).Scan(
 		&order.ID,
 		&order.CodeOrder,
@@ -246,17 +255,19 @@ func (r *repository) UpdateStatus(
 func (r *repository) Delete(
 	ctx context.Context,
 	id int64,
+	userID int64,
 ) error {
 
 	const query = `
 		DELETE FROM orders
-		WHERE id = $1;
+		WHERE id = $1 AND user_id = $2;
 	`
 
 	_, err := r.db.Exec(
 		ctx,
 		query,
 		id,
+		userID,
 	)
 
 	return err

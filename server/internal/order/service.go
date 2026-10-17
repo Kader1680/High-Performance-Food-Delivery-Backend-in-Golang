@@ -54,21 +54,21 @@ func (s *Service) Create(
 }
 
 
-func (s *Service) GetAll(
-	ctx context.Context,
-) ([]Order, error) {
+func (s *Service) GetAll(ctx context.Context, userID int64) ([]Order, error) {
 
-	return s.repo.GetAll(ctx)
+	return s.repo.GetAll(ctx, userID)
 }
 
 func (s *Service) FindByID(
 	ctx context.Context,
 	id int64,
+	userID int64,
 ) (*OrderResponse, error) {
 
 	order, err := s.repo.FindByID(
 		ctx,
 		id,
+		userID,
 	)
 
 	if err != nil {
@@ -104,6 +104,7 @@ func (s *Service) UpdateStatus(
 	ctx context.Context,
 	id int64,
 	status string,
+	userID int64,
 ) (*Order, error) {
 
 	orderStatus := OrderStatus(status)
@@ -124,6 +125,7 @@ func (s *Service) UpdateStatus(
 	return s.repo.UpdateStatus(
 		ctx,
 		id,
+		userID,
 		orderStatus,
 	)
 }
@@ -131,10 +133,12 @@ func (s *Service) UpdateStatus(
 func (s *Service) Delete(
 	ctx context.Context,
 	id int64,
+	userID int64,
 ) error {
 
 	return s.repo.Delete(
 		ctx,
 		id,
+		userID,
 	)
 }

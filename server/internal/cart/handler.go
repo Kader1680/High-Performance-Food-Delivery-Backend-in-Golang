@@ -2,8 +2,7 @@ package cart
 
 import (
 	"net/http"
-	"strconv"
-
+	"strconv"	
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,31 +16,54 @@ func NewHandler(service *Service) *Handler {
 	}
 }
 
+func getUserID(c *gin.Context) (int64, bool) {
+    value, exists := c.Get("userID")
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{
+            "error": "User not authenticated",
+        })
+        return 0, false
+    }
+
+    userID, ok := value.(int64)
+    if !ok {
+        c.JSON(http.StatusInternalServerError, gin.H{
+            "error": "Invalid user ID in context",
+        })
+        return 0, false
+    }
+
+    return userID, true
+}
 func (h *Handler) GetCart(c *gin.Context) {
 
-	// Temporary until authentication middleware provides user ID.
-	userID := int64(1)
-
-	cart, err := h.service.GetCart(
-		c.Request.Context(),
-		userID,
-	)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+	userID, ok := getUserID(c)
+	if !ok {
 		return
 	}
+		cart, err := h.service.GetCart(
+			c.Request.Context(),
+			userID,
+		)
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": cart,
-	})
-}
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"data": cart,
+		})
+	}
 
 func (h *Handler) DeleteItem(c *gin.Context) {
 
-	userID := int64(1)
+	userID, ok := getUserID(c)
+	if !ok {
+		return
+	}
 
 	itemID, err := strconv.ParseInt(
 		c.Param("itemID"),
@@ -77,7 +99,10 @@ func (h *Handler) DeleteItem(c *gin.Context) {
 
 func (h *Handler) AddItem(c *gin.Context) {
 
-	userID := int64(1)
+	userID, ok := getUserID(c)
+	if !ok {
+		return
+	}
 
 	var req AddCartItemRequest
 
@@ -109,7 +134,10 @@ func (h *Handler) AddItem(c *gin.Context) {
 
 func (h *Handler) UpdateItem(c *gin.Context) {
 
-	userID := int64(1)
+	userID, ok := getUserID(c)
+	if !ok {
+		return
+	}
 
 	itemID, err := strconv.ParseInt(
 		c.Param("itemID"),
