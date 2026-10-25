@@ -12,6 +12,7 @@ import (
 	"github.com/Kader1680/High-Performance-Food-Delivery-Backend/internal/menuitem"
 	"github.com/Kader1680/High-Performance-Food-Delivery-Backend/internal/cart"
 	"github.com/Kader1680/High-Performance-Food-Delivery-Backend/internal/order"
+	"github.com/Kader1680/High-Performance-Food-Delivery-Backend/internal/payment"
 )
 
 func NewRouter(pool *pgxpool.Pool) *gin.Engine {
@@ -115,5 +116,18 @@ func NewRouter(pool *pgxpool.Pool) *gin.Engine {
 		orders.PUT("/:id/status", orderHandler.UpdateStatus)
 		orders.DELETE("/:id", orderHandler.Delete)
 	}
+
+	paymentRepo := payment.NewRepository(pool)
+	paymentService := payment.NewService(paymentRepo)
+	paymentHandler := payment.NewHandler(paymentService)
+
+	paymentRoutes := r.Group("/api/orders/:id")
+	paymentRoutes.Use(middleware.AuthMiddleware())
+	{
+		paymentRoutes.POST("/checkout", paymentHandler.Create)
+		// paymentRoutes.GET("/payment", paymentHandler.GetAll)
+		// paymentRoutes.GET("/payment/:id", paymentHandler.FindByID)
+	}
 	return r
 }
+
