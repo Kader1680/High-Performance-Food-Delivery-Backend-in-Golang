@@ -125,8 +125,7 @@ func NewRouter(pool *pgxpool.Pool) *gin.Engine {
 	paymentRoutes.Use(middleware.AuthMiddleware())
 	{
 		paymentRoutes.POST("/checkout", paymentHandler.Create)
-		// paymentRoutes.GET("/payment", paymentHandler.GetAll)
-		// paymentRoutes.GET("/payment/:id", paymentHandler.FindByID)
+		paymentRoutes.POST("/create-checkout-url/", paymentHandler.CreateCheckoutUrl)
 	}
 	return r
 }

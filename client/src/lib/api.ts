@@ -20,6 +20,7 @@ async function request<T>(path: string, options: FetchOptions = {}): Promise<T> 
     credentials: "include", // send httpOnly cookie
     headers: {
       "Content-Type": "application/json",
+       
       ...headers,
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,

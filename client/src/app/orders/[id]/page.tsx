@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ordersApi, OrderDetail, OrderStatus, ORDER_STATUSES } from "@/lib/orders";
 import { ApiError } from "@/lib/api";
+import { PayButton } from "../../../components/PayButton";
 
 export default function OrderShowPage() {
   const { id } = useParams<{ id: string }>();
@@ -139,6 +140,13 @@ export default function OrderShowPage() {
           </span>
         </div>
       </div>
+
+
+      <PayButton orderId={order.id} amountCents={Math.round(order.total_amount * 100)} />
+
+      
     </div>
+
+
   );
 }
